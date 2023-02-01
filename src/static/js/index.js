@@ -24,7 +24,7 @@ const textureLoader = new THREE.TextureLoader()
 camera.position.set(0, 0, 20)
 scene.add(camera)
 
-const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+const cubeGeometry = new THREE.BoxGeometry(2, 2, 2);
 const material = new THREE.MeshBasicMaterial({
   wireframe: true,
 });
@@ -32,52 +32,26 @@ const redMaterial = new THREE.MeshBasicMaterial({
   color: "#ff0000",
 });
 
-// 1000立方体
 let cubeArr = [];
-for (let i = -5; i < 5; i++) {
-  for (let j = -5; j < 5; j++) {
-    for (let z = -5; z < 5; z++) {
+let cubeGroup = new THREE.Group();
+for (let i = 0; i < 5; i++) {
+  for (let j = 0; j < 5; j++) {
+    for (let z = 0; z < 5; z++) {
       const cube = new THREE.Mesh(cubeGeometry, material);
-      cube.position.set(i, j, z);
-      scene.add(cube);
+      cube.position.set(2*i-5, 2*j-5, 2*z-5);
       cubeArr.push(cube);
+      cubeGroup.add(cube);
     }
   }
 }
+
+scene.add(cubeGroup);
 
 // 创建投射光线对象
 const raycaster = new THREE.Raycaster();
 
 // 鼠标的位置对象
 const mouse = new THREE.Vector2();
-
-// 监听鼠标的位置
-// window.addEventListener("mousemove", (event) => {
-//   //   console.log(event);
-//   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-//   mouse.y = -((event.clientY / window.innerHeight) * 2 - 1);
-//   raycaster.setFromCamera(mouse, camera);
-//   let result = raycaster.intersectObjects(cubeArr);
-//   //   console.log(result);
-//   //   result[0].object.material = redMaterial;
-//   result.forEach((item) => {
-//     item.object.material = redMaterial;
-//   });
-// });
-
-// 监听鼠标的位置
-// window.addEventListener("click", (event) => {
-//   //   console.log(event);
-//   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-//   mouse.y = -((event.clientY / window.innerHeight) * 2 - 1);
-//   raycaster.setFromCamera(mouse, camera);
-//   let result = raycaster.intersectObjects(cubeArr);
-//   //   console.log(result);
-//   //   result[0].object.material = redMaterial;
-//   result.forEach((item) => {
-//     item.object.material = redMaterial;
-//   });
-// });
 
 // 初始化渲染器
 const renderer = new THREE.WebGLRenderer();
@@ -105,21 +79,10 @@ scene.add(axesHelper);
 // 设置时钟
 const clock = new THREE.Clock();
 
-window.addEventListener('dblclick', () => {
-  const fullScreenElement = document.fullscreenElement
-  if (fullScreenElement == null) {
-    // 双击控制屏幕进入全屏，退出全屏
-    // 让画布对象全屏
-    renderer.domElement.requestFullscreen()
-  } else {
-    // 退出全屏，使用document对象
-    document.exitFullscreen()
-  }
-})
-
 function render() {
-  let time = clock.getElapsedTime()
-  controls.update()
+  let time = clock.getElapsedTime();
+  cubeGroup.rotation.x = time * 0.5;
+  cubeGroup.rotation.y = time * 0.5;
   renderer.render(scene, camera)
   //   渲染下一帧的时候就会调用render函数
   requestAnimationFrame(render)
