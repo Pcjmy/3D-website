@@ -45,7 +45,7 @@ for (let i = 0; i < 5; i++) {
 
 scene.add(cubeGroup);
 
-let triangleMesh;
+let triangleGroup = new THREE.Group();
 // 创建几何体
 for (let i=0; i<50; i++) {
   // 每一个三角形，需要三个顶点，每个顶点需要三个值
@@ -53,7 +53,7 @@ for (let i=0; i<50; i++) {
   const positionArray = new Float32Array(9)
   for (let j=0; j<9; j++) {
     if (j%3 === 1) {
-      positionArray[j] = Math.random() * 10 - 35
+      positionArray[j] = Math.random() * 10 - 5
     } else {
       positionArray[j] = Math.random() * 10 - 5
     }
@@ -63,12 +63,18 @@ for (let i=0; i<50; i++) {
     new THREE.BufferAttribute(positionArray, 3)
   )
   let color = new THREE.Color(Math.random(), Math.random(), Math.random())
-  const Material = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.5 })
+  const Material = new THREE.MeshBasicMaterial({
+    color: color,
+    transparent: true,
+    opacity: 0.5,
+    side: THREE.DoubleSide
+  })
   // 根据几何体和材质创建物体
   const mesh = new THREE.Mesh(geometry, Material)
-  // 将几何体添加到场景中
-  scene.add(mesh)
+  triangleGroup.add(mesh);
 }
+triangleGroup.position.set(0, -30, 0);
+scene.add(triangleGroup);
 
 // 创建投射光线对象
 const raycaster = new THREE.Raycaster();
@@ -101,6 +107,8 @@ function render() {
   let time = clock.getElapsedTime();
   cubeGroup.rotation.x = time * 0.5;
   cubeGroup.rotation.y = time * 0.5;
+  triangleGroup.rotation.x = time * 0.3;
+  triangleGroup.rotation.y = time * 0.4;
   camera.position.y = -(window.scrollY / window.innerHeight) * 30;
   renderer.render(scene, camera)
   //   渲染下一帧的时候就会调用render函数
