@@ -6,7 +6,7 @@ import gsap from 'gsap'
 // 导入dat.gui
 import * as dat from 'dat.gui'
 
-const gui = new dat.GUI()
+// const gui = new dat.GUI()
 
 // 创建场景
 const scene = new THREE.Scene()
@@ -32,20 +32,43 @@ const redMaterial = new THREE.MeshBasicMaterial({
   color: "#ff0000",
 });
 
-let cubeArr = [];
 let cubeGroup = new THREE.Group();
 for (let i = 0; i < 5; i++) {
   for (let j = 0; j < 5; j++) {
     for (let z = 0; z < 5; z++) {
       const cube = new THREE.Mesh(cubeGeometry, material);
       cube.position.set(2*i-5, 2*j-5, 2*z-5);
-      cubeArr.push(cube);
       cubeGroup.add(cube);
     }
   }
 }
 
 scene.add(cubeGroup);
+
+let triangleMesh;
+// 创建几何体
+for (let i=0; i<50; i++) {
+  // 每一个三角形，需要三个顶点，每个顶点需要三个值
+  const geometry = new THREE.BufferGeometry()
+  const positionArray = new Float32Array(9)
+  for (let j=0; j<9; j++) {
+    if (j%3 === 1) {
+      positionArray[j] = Math.random() * 10 - 30
+    } else {
+      positionArray[j] = Math.random() * 10 - 5
+    }
+  }
+  geometry.setAttribute(
+    'position',
+    new THREE.BufferAttribute(positionArray, 3)
+  )
+  let color = new THREE.Color(Math.random(), Math.random(), Math.random())
+  const Material = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.5 })
+  // 根据几何体和材质创建物体
+  const mesh = new THREE.Mesh(geometry, Material)
+  // 将几何体添加到场景中
+  scene.add(mesh)
+}
 
 // 创建投射光线对象
 const raycaster = new THREE.Raycaster();
@@ -54,7 +77,8 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
 // 初始化渲染器
-const renderer = new THREE.WebGLRenderer();
+// 渲染器透明
+const renderer = new THREE.WebGLRenderer({alpha: true});
 // 设置渲染的尺寸大小
 renderer.setSize(window.innerWidth, window.innerHeight);
 // 开启场景中的阴影贴图
@@ -65,17 +89,11 @@ renderer.physicallyCorrectLights = true;
 // 将webgl渲染的canvas内容添加到body
 document.body.appendChild(renderer.domElement);
 
-// // 使用渲染器，通过相机将场景渲染进来
-// renderer.render(scene, camera);
-
 // 创建轨道控制器
 const controls = new OrbitControls(camera, renderer.domElement);
 // 设置控制器阻尼，让控制器更有真实效果,必须在动画循环里调用.update()。
 controls.enableDamping = true;
 
-// 添加坐标轴辅助器
-const axesHelper = new THREE.AxesHelper(5);
-scene.add(axesHelper);
 // 设置时钟
 const clock = new THREE.Clock();
 
