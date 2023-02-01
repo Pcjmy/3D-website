@@ -119,3 +119,14 @@ window.addEventListener('resize', () => {
   // 设置渲染器的像素比
   renderer.setPixelRatio(window.devicePixelRatio)
 })
+
+// 设置当前页
+let currentPage = 0;
+// 监听滚动事件
+window.addEventListener('scroll', () => {
+  const newPage = Math.round(window.scrollY / window.innerHeight)
+  if (newPage != currentPage) {
+    currentPage = newPage;
+    console.log(currentPage);
+  }
+})
