@@ -53,7 +53,7 @@ for (let i=0; i<50; i++) {
   const positionArray = new Float32Array(9)
   for (let j=0; j<9; j++) {
     if (j%3 === 1) {
-      positionArray[j] = Math.random() * 10 - 30
+      positionArray[j] = Math.random() * 10 - 35
     } else {
       positionArray[j] = Math.random() * 10 - 5
     }
@@ -101,6 +101,7 @@ function render() {
   let time = clock.getElapsedTime();
   cubeGroup.rotation.x = time * 0.5;
   cubeGroup.rotation.y = time * 0.5;
+  camera.position.y = -(window.scrollY / window.innerHeight) * 30;
   renderer.render(scene, camera)
   //   渲染下一帧的时候就会调用render函数
   requestAnimationFrame(render)
