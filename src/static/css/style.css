@@ -23,13 +23,9 @@ canvas {
   z-index: 10;
 }
 
-.page h1 {
+.page h3 {
   margin: 60px;
   font-size: 40px;
-}
-
-.page h3 {
-  font-size: 30px;
 }
 
 ::-webkit-scrollbar {

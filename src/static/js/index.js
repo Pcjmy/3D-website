@@ -76,11 +76,53 @@ for (let i=0; i<50; i++) {
 triangleGroup.position.set(0, -30, 0);
 scene.add(triangleGroup);
 
-// 创建投射光线对象
-const raycaster = new THREE.Raycaster();
+// 弹跳小球
+const sphereGroup = new THREE.Group();
+const sphereGeometry = new THREE.SphereGeometry(1, 20, 20);
+const spherematerial = new THREE.MeshStandardMaterial({
+  side: THREE.DoubleSide,
+});
+const sphere = new THREE.Mesh(sphereGeometry, spherematerial);
+// 投射阴影
+sphere.castShadow = true;
 
-// 鼠标的位置对象
-const mouse = new THREE.Vector2();
+sphereGroup.add(sphere);
+
+// 创建平面
+const planeGeometry = new THREE.PlaneGeometry(20, 20);
+const plane = new THREE.Mesh(planeGeometry, spherematerial);
+plane.position.set(0, -1, 0);
+plane.rotation.x = -Math.PI / 2;
+// 接收阴影
+plane.receiveShadow = true;
+sphereGroup.add(plane);
+
+// 灯光
+// 环境光
+const light = new THREE.AmbientLight(0xffffff, 0.5); // soft white light
+sphereGroup.add(light);
+
+const smallBall = new THREE.Mesh(
+  new THREE.SphereGeometry(0.1, 20, 20),
+  new THREE.MeshBasicMaterial({ color: 0xff0000 })
+);
+smallBall.position.set(2, 2, 2);
+//直线光源
+const pointLight = new THREE.PointLight(0xff0000, 3);
+// pointLight.position.set(2, 2, 2);
+pointLight.castShadow = true;
+
+// 设置阴影贴图模糊度
+pointLight.shadow.radius = 20;
+// 设置阴影贴图的分辨率
+pointLight.shadow.mapSize.set(512, 512);
+
+// 设置透视相机的属性
+smallBall.add(pointLight);
+sphereGroup.add(smallBall);
+
+sphereGroup.position.set(0, -60, 0);
+scene.add(sphereGroup);
 
 // 初始化渲染器
 // 渲染器透明
@@ -109,9 +151,14 @@ function render() {
   cubeGroup.rotation.y = time * 0.5;
   triangleGroup.rotation.x = time * 0.3;
   triangleGroup.rotation.y = time * 0.4;
+  smallBall.position.x = Math.sin(time) * 3;
+  smallBall.position.z = Math.cos(time) * 3;
+  smallBall.position.y = 2 + Math.sin(time * 10) / 2;
+  sphereGroup.rotation.z = Math.sin(time) * 0.05;
+  sphereGroup.rotation.x = Math.sin(time) * 0.05;
   camera.position.y = -(window.scrollY / window.innerHeight) * 30;
   renderer.render(scene, camera)
-  //   渲染下一帧的时候就会调用render函数
+  // 渲染下一帧的时候就会调用render函数
   requestAnimationFrame(render)
 }
 
