@@ -32,6 +32,7 @@ const redMaterial = new THREE.MeshBasicMaterial({
   color: "#ff0000",
 });
 
+let cubeArr = []
 let cubeGroup = new THREE.Group();
 for (let i = 0; i < 5; i++) {
   for (let j = 0; j < 5; j++) {
@@ -39,6 +40,7 @@ for (let i = 0; i < 5; i++) {
       const cube = new THREE.Mesh(cubeGeometry, material);
       cube.position.set(2*i-5, 2*j-5, 2*z-5);
       cubeGroup.add(cube);
+      cubeArr.push(cube);
     }
   }
 }
@@ -124,6 +126,17 @@ sphereGroup.add(smallBall);
 sphereGroup.position.set(0, -60, 0);
 scene.add(sphereGroup);
 
+// 创建投射光线对象
+const raycaster = new THREE.Raycaster();
+// 鼠标的位置对象
+const mouse = new THREE.Vector2();
+
+// 监听鼠标的位置
+window.addEventListener('mousemove', (event) => {
+  mouse.x = event.clientX / window.innerWidth - 0.5;
+  mouse.y = event.clientY / window.innerHeight - 0.5;
+});
+
 // 初始化渲染器
 // 渲染器透明
 const renderer = new THREE.WebGLRenderer({alpha: true});
@@ -147,6 +160,7 @@ const clock = new THREE.Clock();
 
 function render() {
   let time = clock.getElapsedTime();
+  let deltaTime = clock.getDelta();
   cubeGroup.rotation.x = time * 0.5;
   cubeGroup.rotation.y = time * 0.5;
   triangleGroup.rotation.x = time * 0.3;
@@ -157,6 +171,7 @@ function render() {
   sphereGroup.rotation.z = Math.sin(time) * 0.05;
   sphereGroup.rotation.x = Math.sin(time) * 0.05;
   camera.position.y = -(window.scrollY / window.innerHeight) * 30;
+  camera.position.x += (mouse.x * 10 - camera.position.x) * deltaTime * 5000;
   renderer.render(scene, camera)
   // 渲染下一帧的时候就会调用render函数
   requestAnimationFrame(render)
@@ -183,6 +198,5 @@ window.addEventListener('scroll', () => {
   const newPage = Math.round(window.scrollY / window.innerHeight)
   if (newPage != currentPage) {
     currentPage = newPage;
-    console.log(currentPage);
   }
 })
